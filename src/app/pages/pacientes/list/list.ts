@@ -130,4 +130,13 @@ export class List {
   showDialog(): void {
     this.visible = true;
   }
+
+
+cancelar(){
+  this.visible = false;
+  this.pacienteForm.reset();
+}
+
+salvar(){
+}
 }
