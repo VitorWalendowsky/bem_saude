@@ -14,6 +14,7 @@ import { TextareaModule } from "primeng/textarea";
 
 @Component({
   selector: 'app-list',
+  standalone: true,
   imports: [
     ButtonModule, 
     SelectModule, 
