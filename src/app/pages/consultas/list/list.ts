@@ -58,7 +58,7 @@ export class List {
     paciente: ['', Validators.required],
     profissional: ['', Validators.required],
     data: ['', Validators.required],
-    horario: ['', Validators.required],
+    // horario: ['', Validators.required],
     duracao: [30, Validators.required],
     tipo: ['Presencial', Validators.required],
     observacoes: ['']

@@ -1,0 +1,150 @@
+<div class="space-y-6">
+
+  <!-- Cabeçalho -->
+  <div class="flex justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Financeiro</h1>
+      <p class="text-gray-600 dark:text-gray-400">Gestão de faturas e pagamentos</p>
+    </div>
+
+    <p-button label="Nova Fatura" icon="fa fa-plus" (onClick)="novaFatura()"></p-button>
+  </div>
+
+  <!-- Cards resumo -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-4 flex items-center justify-between">
+      <div>
+        <p class="text-gray-500 text-sm">Em Aberto</p>
+        <p class="text-lg font-bold text-yellow-500">
+          {{ formatBRL(totalEmAberto) }}
+        </p>
+      </div>
+      <div class="w-10 h-10 rounded-lg bg-yellow-900/40 flex items-center justify-center">
+        <i class="fa fa-clock text-yellow-400"></i>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-4 flex items-center justify-between">
+      <div>
+        <p class="text-gray-500 text-sm">Recebido Hoje</p>
+        <p class="text-lg font-bold text-green-500">
+          {{ formatBRL(recebidoHoje) }}
+        </p>
+      </div>
+      <div class="w-10 h-10 rounded-lg bg-green-900/40 flex items-center justify-center">
+        <i class="fa fa-check text-green-400"></i>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-4 flex items-center justify-between">
+      <div>
+        <p class="text-gray-500 text-sm">Total do Mês</p>
+        <p class="text-lg font-bold text-blue-500">
+          {{ formatBRL(totalDoMes) }}
+        </p>
+      </div>
+      <div class="w-10 h-10 rounded-lg bg-blue-900/40 flex items-center justify-center">
+        <i class="fa fa-dollar-sign text-blue-400"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-4">
+    <div class="flex flex-row gap-4">
+      <input
+        pInputText
+        placeholder="Buscar por paciente..."
+        fluid
+        [(ngModel)]="pesquisa"
+      />
+
+      <p-select
+        [options]="filtros"
+        [(ngModel)]="filtroSelecionado">
+      </p-select>
+    </div>
+  </div>
+
+  <!-- Tabela -->
+  <p-table
+    [value]="faturasFiltradas"
+    [tableStyle]="{ 'min-width': '60rem' }"
+    [paginator]="true"
+    [rows]="5"
+    [rowsPerPageOptions]="[5, 10, 20]">
+
+    <ng-template #header>
+      <tr>
+        <th>Fatura</th>
+        <th>Paciente</th>
+        <th>Data</th>
+        <th>Valor</th>
+        <th>Status</th>
+        <th>
+          <div class="text-right">Ações</div>
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-fatura>
+      <tr>
+        <td class="font-semibold">
+          #{{ fatura.id.toString().padStart(4, '0') }}
+        </td>
+
+        <td>{{ fatura.paciente }}</td>
+
+        <td class="text-gray-300">
+          {{ fatura.data }}
+        </td>
+
+        <!-- ✅ VALOR COM SOLUÇÃO 3 -->
+        <td>
+          <span
+            class="px-2 py-1 rounded-md text-sm font-semibold"
+            [ngClass]="{
+              'bg-green-900 text-green-200': fatura.status === 'PAGA',
+              'bg-yellow-900 text-yellow-200': fatura.status === 'PENDENTE',
+              'bg-red-900 text-red-200': fatura.status === 'CANCELADA'
+            }">
+            {{ formatBRL(fatura.valor) }}
+          </span>
+        </td>
+
+        <!-- Status -->
+        <td>
+          <span
+            class="px-2 py-1 rounded-full text-sm font-medium"
+            [ngClass]="{
+              'bg-green-900 text-green-200': fatura.status === 'PAGA',
+              'bg-yellow-900 text-yellow-200': fatura.status === 'PENDENTE',
+              'bg-red-900 text-red-200': fatura.status === 'CANCELADA'
+            }">
+            {{ statusLabel(fatura.status) }}
+          </span>
+        </td>
+
+        <!-- Ações -->
+        <td>
+          <div class="flex gap-1 justify-end">
+            <p-button
+              icon="fa-regular fa-pen-to-square"
+              variant="text"
+              severity="info"
+              (onClick)="editarFatura(fatura)">
+            </p-button>
+
+            <p-button
+              icon="fa fa-trash"
+              variant="text"
+              severity="danger"
+              (onClick)="excluirFatura(fatura.id)">
+            </p-button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+  </p-table>
+</div>

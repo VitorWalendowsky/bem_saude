@@ -4,4 +4,5 @@ export const routes: Routes = [
     {path: 'recepcionistas', loadComponent: () => import('./pages/recepcionistas/list/list').then((m) => m.List)},
     {path: 'pacientes', loadComponent: () => import('./pages/pacientes/list/list').then((m) => m.List)},
     {path: 'consultas', loadComponent: () => import('./pages/consultas/list/list').then((m) => m.List)},
+    {path: 'financeiro', loadComponent: () => import('./pages/financeiro/list/list').then((m) => m.List)},
 ];
