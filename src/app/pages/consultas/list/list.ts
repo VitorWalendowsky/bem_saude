@@ -1,180 +1,133 @@
 import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
-import { RegistroStatusTag } from '../../../core/components/registro-status-tag/registro-status-tag';
-import { AutoFocusModule } from 'primeng/autofocus';
 import { DialogModule } from 'primeng/dialog';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
-import { ConsultasResponseModel} from '../../../models/consultas.model';
-import { InputMaskModule } from "primeng/inputmask";
+import { InputMaskModule } from 'primeng/inputmask';
 import { DatePickerModule } from 'primeng/datepicker';
-import { TextareaModule } from "primeng/textarea";
-
-export type ConsultaStatus =
-  | 'Agendada'
-  | 'Atrasada'
-  | 'Confirmada'
-  | 'Cancelada'
-  | 'Em Andamento'
-  | 'Finalizada';
-
-export interface ConsultaResponseModel {
-  paciente: string;
-  profissional: string;
-  status: ConsultaStatus;
-  data: string; // ISO: YYYY-MM-DD
-  horarioPrevisto: string; // HH:mm
-}
+import { TextareaModule } from 'primeng/textarea';
+import { RegistroStatusTag } from '../../../core/components/registro-status-tag/registro-status-tag';
+import {
+  ConsultasResponseModel,
+  ConsultaStatus,
+  ConsultaTipo
+} from '../../../models/consultas.model';
 
 @Component({
   selector: 'app-list',
+  standalone: true,
   imports: [
+    CommonModule, // ✅ ESSENCIAL
     ButtonModule,
     SelectModule,
     FormsModule,
-    AutoFocusModule,
     DialogModule,
     TableModule,
     InputTextModule,
     InputMaskModule,
     DatePickerModule,
     TextareaModule,
-    ReactiveFormsModule
-],
+    ReactiveFormsModule,
+    RegistroStatusTag
+  ],
   templateUrl: './list.html',
 })
-
-
 export class List {
-  filtros = ["Todos", "Ativos", "Inativos"];
 
-  filtroSelecionado: string = "Todos";
-
-  pesquisa: string = "";
-
-  visible: boolean = false;
-
-  private readonly formBuilder = inject(FormBuilder);
-
-  pacienteForm = this.formBuilder.group({
-    paciente: ["", [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-    profissional: ["", [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-    status: [null, [Validators.required]],
-    ddata: ["", [Validators.required, Validators.maxLength(10)]],
-    horarioPrevisto: [null, [Validators.required, Validators.maxLength(5)]],
-  });
+  filtros = ['Todos', 'Agendadas', 'Finalizadas', 'Canceladas'];
+  filtroSelecionado = 'Todos';
+  pesquisa = '';
+  visible = false;
 
   statusOpcoes: ConsultaStatus[] = [
-  'Agendada',
-  'Atrasada',
-  'Confirmada',
-  'Cancelada',
-  'Em Andamento',
-  'Finalizada'
-];
+    'Agendada',
+    'Confirmada',
+    'Em Atendimento',
+    'Finalizada',
+    'Cancelada'
+  ];
 
+  tipoOpcoes: ConsultaTipo[] = ['Presencial', 'Online'];
 
-  // consultas.mock.ts
+  private readonly fb = inject(FormBuilder);
 
-consultas: ConsultaResponseModel [] = [
-  {
-    paciente: 'Maria Silva',
-    profissional: 'Dra. Ana Souza',
-    status: 'Agendada',
-    data: '2026-02-03',
-    horarioPrevisto: '08:00'
-  },
-  {
-    paciente: 'João Pereira',
-    profissional: 'Dr. Carlos Lima',
-    status: 'Confirmada',
-    data: '2026-02-03',
-    horarioPrevisto: '08:30'
-  },
-  {
-    paciente: 'Fernanda Costa',
-    profissional: 'Dra. Juliana Martins',
-    status: 'Atrasada',
-    data: '2026-02-03',
-    horarioPrevisto: '09:00'
-  },
-  {
-    paciente: 'Rafael Almeida',
-    profissional: 'Dr. Bruno Rocha',
-    status: 'Em Andamento',
-    data: '2026-02-03',
-    horarioPrevisto: '09:30'
-  },
-  {
-    paciente: 'Camila Santos',
-    profissional: 'Dra. Ana Souza',
-    status: 'Finalizada',
-    data: '2026-02-03',
-    horarioPrevisto: '10:00'
-  },
-  {
-    paciente: 'Diego Fernandes',
-    profissional: 'Dr. Carlos Lima',
-    status: 'Cancelada',
-    data: '2026-02-04',
-    horarioPrevisto: '08:00'
-  },
-  {
-    paciente: 'Patrícia Oliveira',
-    profissional: 'Dra. Juliana Martins',
-    status: 'Agendada',
-    data: '2026-02-04',
-    horarioPrevisto: '08:30'
-  },
-  {
-    paciente: 'Lucas Ribeiro',
-    profissional: 'Dr. Bruno Rocha',
-    status: 'Confirmada',
-    data: '2026-02-04',
-    horarioPrevisto: '09:00'
-  },
-  {
-    paciente: 'Aline Barbosa',
-    profissional: 'Dra. Ana Souza',
-    status: 'Finalizada',
-    data: '2026-02-04',
-    horarioPrevisto: '09:30'
-  },
-  {
-    paciente: 'Gustavo Nunes',
-    profissional: 'Dr. Carlos Lima',
-    status: 'Em Andamento',
-    data: '2026-02-05',
-    horarioPrevisto: '10:00'
-  },
-  {
-    paciente: 'Bruna Carvalho',
-    profissional: 'Dra. Juliana Martins',
-    status: 'Atrasada',
-    data: '2026-02-05',
-    horarioPrevisto: '10:30'
-  },
-  {
-    paciente: 'Eduardo Souza',
-    profissional: 'Dr. Bruno Rocha',
-    status: 'Agendada',
-    data: '2026-02-06',
-    horarioPrevisto: '08:00'
-  }
-];
+  consultaForm = this.fb.group({
+    paciente: ['', Validators.required],
+    profissional: ['', Validators.required],
+    data: ['', Validators.required],
+    horario: ['', Validators.required],
+    duracao: [30, Validators.required],
+    tipo: ['Presencial', Validators.required],
+    observacoes: ['']
+  });
 
-showDialog(): void {
+  consultas: ConsultasResponseModel[] = [
+    {
+      id: '1',
+      horario: '08:00',
+      data: '2024-01-26',
+      paciente: 'Maria Silva',
+      profissional: 'Dr. João Silva',
+      tipo: 'Presencial',
+      status: 'Confirmada'
+    },
+    {
+      id: '2',
+      horario: '09:00',
+      data: '2024-01-26',
+      paciente: 'João Santos',
+      profissional: 'Dra. Maria Santos',
+      tipo: 'Presencial',
+      status: 'Agendada'
+    },
+    {
+      id: '3',
+      horario: '10:00',
+      data: '2024-01-26',
+      paciente: 'Ana Oliveira',
+      profissional: 'Dr. João Silva',
+      tipo: 'Online',
+      status: 'Em Atendimento'
+    },
+    {
+      id: '4',
+      horario: '14:00',
+      data: '2024-01-25',
+      paciente: 'Fernanda Lima',
+      profissional: 'Dra. Ana Lima',
+      tipo: 'Presencial',
+      status: 'Finalizada'
+    },
+    {
+      id: '5',
+      horario: '15:00',
+      data: '2024-01-25',
+      paciente: 'Maria Silva',
+      profissional: 'Dr. João Silva',
+      tipo: 'Presencial',
+      status: 'Cancelada'
+    }
+  ];
+
+  showDialog(): void {
     this.visible = true;
   }
 
+  cancelar(): void {
+    this.visible = false;
+    this.consultaForm.reset({
+      duracao: 30,
+      tipo: 'Presencial'
+    });
+  }
 
-cancelar(){
-  this.visible = false;
-  this.pacienteForm.reset();
-}
+  salvar(): void {
+    if (this.consultaForm.invalid) return;
 
-salvar(){
-}
+    console.log(this.consultaForm.value);
+    this.cancelar();
+  }
 }

@@ -1,0 +1,127 @@
+<div class="space-y-6">
+
+  <div class="flex justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Consultas</h1>
+      <p class="text-gray-600">Gerenciamento de agendamentos</p>
+    </div>
+
+    <p-button label="Nova Consulta" icon="fa fa-plus" (onClick)="showDialog()"></p-button>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm p-4">
+    <div class="flex flex-row gap-4">
+      <input pInputText
+             placeholder="Buscar paciente, consulta..."
+             fluid
+             [(ngModel)]="pesquisa">
+
+      <p-select [options]="filtros"
+                [(ngModel)]="filtroSelecionado">
+      </p-select>
+    </div>
+  </div>
+
+  <p-table [value]="consultas"
+           [tableStyle]="{ 'min-width': '60rem' }"
+           [paginator]="true"
+           [rows]="5"
+           [rowsPerPageOptions]="[5,10,20]">
+
+    <ng-template #header>
+      <tr>
+        <th>Horário</th>
+        <th>Paciente</th>
+        <th>Profissional</th>
+        <th>Tipo</th>
+        <th>Status</th>
+        <th>
+          <div class="text-right">Ações</div>
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-consulta>
+      <tr>
+        <td>
+          <strong>{{ consulta.horario }}</strong><br />
+          <small class="text-gray-500">{{ consulta.data }}</small>
+        </td>
+        <td>{{ consulta.paciente }}</td>
+        <td>{{ consulta.profissional }}</td>
+        <td>
+          <span class="px-2 py-1 rounded-full text-sm font-medium"
+                [ngClass]="{'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200': consulta.tipo === 'Presencial',
+                 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200': consulta.tipo === 'Online'}"> {{ consulta.tipo }}
+          </span>
+        </td>
+        <td>
+          <app-registro-status-tag [status]="consulta.status" />
+        </td>
+        <td>
+          <div class="flex gap-1 justify-end">
+            <p-button icon="fa-regular fa-pen-to-square"
+                      variant="text"
+                      severity="info" />
+            <p-button icon="fa fa-trash"
+                      variant="text"
+                      severity="danger" />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+  </p-table>
+</div>
+
+<p-dialog header="Nova Consulta"
+          [modal]="true"
+          [(visible)]="visible"
+          [style]="{ width: '50rem' }">
+
+  <form [formGroup]="consultaForm">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+
+      <div class="md:col-span-2">
+        <label class="font-semibold">Paciente *</label>
+        <p-select placeholder="Selecione" fluid formControlName="paciente"></p-select>
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="font-semibold">Profissional *</label>
+        <p-select placeholder="Selecione" fluid formControlName="profissional"></p-select>
+      </div>
+
+      <div>
+        <label class="font-semibold">Data *</label>
+        <p-date-picker fluid formControlName="data"></p-date-picker>
+      </div>
+
+      <div>
+        <label class="font-semibold">Horário *</label>
+        <p-inputmask mask="99:99" fluid formControlName="horario"></p-inputmask>
+      </div>
+
+      <div>
+        <label class="font-semibold">Duração (min)</label>
+        <input pInputText type="number" fluid formControlName="duracao">
+      </div>
+
+      <div>
+        <label class="font-semibold">Tipo *</label>
+        <p-select [options]="tipoOpcoes" fluid formControlName="tipo"></p-select>
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="font-semibold">Observações</label>
+        <textarea rows="4" pTextarea fluid formControlName="observacoes"></textarea>
+      </div>
+
+    </div>
+
+    <div class="flex justify-end gap-2">
+      <p-button label="Cancelar" severity="secondary" (click)="cancelar()" />
+      <p-button label="Agendar" icon="fa fa-save" (click)="salvar()" [disabled]="consultaForm.invalid" />
+    </div>
+  </form>
+</p-dialog>
